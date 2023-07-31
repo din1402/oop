@@ -34,4 +34,26 @@ class RecipeService {
     public List<Recipe> getAllRecipes() {
         return recipeRepository.getAllRecipes();
     }
+    public List<Recipe> searchRecipes(String keyword) {
+        return recipeRepository.searchRecipes(keyword);
+    }
+
+    public void updateRecipe(int recipeId, Recipe updatedRecipe) {
+        Recipe existingRecipe = recipeRepository.getRecipeById(recipeId);
+        if (existingRecipe != null) {
+            recipeRepository.updateRecipe(existingRecipe, updatedRecipe);
+        } else {
+            throw new RecipeNotFoundException("Recipe with ID " + recipeId + " not found.");
+        }
+    }
+
+    public void deleteRecipe(int recipeId) {
+        Recipe existingRecipe = recipeRepository.getRecipeById(recipeId);
+        if (existingRecipe != null) {
+            recipeRepository.deleteRecipe(existingRecipe);
+        } else {
+            throw new RecipeNotFoundException("Recipe with ID " + recipeId + " not found.");
+        }
+    }
+
 }

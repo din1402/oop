@@ -95,4 +95,41 @@ class Data implements RecipeRepository {
 
         return new Recipe( id, title, description, List.of(ingredients), instructions, author);
     }
+    @Override
+    public List<Recipe> searchRecipes(String keyword) {
+        List<Recipe> recipes = new ArrayList<>();
+        String sql = "SELECT * FROM recipes WHERE title LIKE ? OR author LIKE ? OR ingredients LIKE ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            String searchKeyword = "%" + keyword + "%";
+            statement.setString(1, searchKeyword);
+            statement.setString(2, searchKeyword);
+            statement.setString(3, searchKeyword);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    recipes.add(createRecipeFromResultSet(resultSet));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return recipes;
+    }
+
+    @Override
+    public Recipe getRecipeById(int id) {
+        Recipe recipe = null;
+        String sql = "SELECT * FROM recipes WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    recipe = createRecipeFromResultSet(resultSet);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return recipe;
+    }
 }
